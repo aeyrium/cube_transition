@@ -1,6 +1,6 @@
 name: cube_transition
 description: A 3D Cube transition for PageView and PageRoute
-version: 1.0.0
+version: 1.0.1
 
 homepage: https://aeyrium.com/
 repository: https://github.com/aeyrium/cube_transition
