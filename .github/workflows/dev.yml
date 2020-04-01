@@ -5,17 +5,15 @@ on:
     branches: [ dev ]
 
 jobs:
-  publish:
-
+  publishing:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Dry-run
-        uses: ilteoood/actions-flutter-pub-publisher@master
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        
+      - name: '>> Dart package Dry-run<<'
+        uses: k-paxian/dart-package-publisher@master
         with:
-          credential: ${{secrets.CREDENTIAL_JSON}}
-          flutter_package: true
-          skip_test: true
-          dry_run: true
+          credentialJson: ${{ secrets.CREDENTIAL_JSON }}
+          dryRunOnly: true
+          skipTests: true
