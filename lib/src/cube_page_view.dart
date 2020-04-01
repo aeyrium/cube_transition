@@ -1,5 +1,5 @@
+import 'dart:math';
 import 'dart:ui';
-import 'package:vector_math/vector_math.dart' as vector;
 import 'package:flutter/material.dart';
 
 /// Signature for a function that creates a widget for a given index in a [CubePageView]
@@ -150,7 +150,7 @@ class CubeWidget extends StatelessWidget {
     final opacity = lerpDouble(0, 1, t.abs()).clamp(0.0, 1.0);
     final transform = Matrix4.identity();
     transform.setEntry(3, 2, 0.003);
-    transform.rotateY(-vector.radians(rotationY));
+    transform.rotateY(-degToRad(rotationY));
     return Transform(
       alignment: isLeaving ? Alignment.centerRight : Alignment.centerLeft,
       transform: transform,
@@ -172,3 +172,6 @@ class CubeWidget extends StatelessWidget {
     );
   }
 }
+
+num degToRad(num deg) => deg * (pi / 180.0);
+num radToDeg(num rad) => rad * (180.0 / pi);
