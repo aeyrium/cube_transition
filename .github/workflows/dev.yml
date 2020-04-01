@@ -16,6 +16,6 @@ jobs:
         uses: ilteoood/actions-flutter-pub-publisher@master
         with:
           credential: ${{secrets.CREDENTIAL_JSON}}
-          flutter_package: false
+          flutter_package: true
           skip_test: true
           dry_run: true
