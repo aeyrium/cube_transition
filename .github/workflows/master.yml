@@ -39,7 +39,7 @@ jobs:
           name: home
           path: version.txt   
 
-  publish:
+   publish:
     needs: [check_version]
     runs-on: ubuntu-latest
     steps:
@@ -53,7 +53,7 @@ jobs:
           skip_test: true
           dry_run: false
 
-  tag:
+   tag:
     needs: [publish]
     name: 'Tag Version'
     runs-on: ubuntu-latest
