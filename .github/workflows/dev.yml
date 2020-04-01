@@ -5,14 +5,13 @@ on:
     branches: [ dev ]
 
 jobs:
+
   publish:
-
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
+      - name: 'Checkout'
         uses: actions/checkout@v1
-      - name: Dry-run
+      - name: 'Dry-run'
         uses: ilteoood/actions-flutter-pub-publisher@master
         with:
           credential: ${{secrets.CREDENTIAL_JSON}}
