@@ -26,13 +26,14 @@ dependencies:
   cube_transition: "^1.0.0"
 ```
 
+You should then run `flutter packages upgrade` or update your packages in IntelliJ.
+
 Import the package:
 
-```
+```dart
 import 'package:cube_transition/cube_transition.dart';
 ```
 
-You should then run `flutter packages upgrade` or update your packages in IntelliJ.
 
 ## Example Project
 
@@ -110,7 +111,7 @@ class Sample2 extends StatelessWidget {
   <img src="https://media.giphy.com/media/lnOUMeIqrtosHMc0vM/giphy.gif">
 </p>
 
-**PageView Cube Transition Custom**
+**PageView Cube Transition Custom** (If you want more control over the items inside the CubePageView)
 
 ```dart
 class Sample3 extends StatelessWidget {
