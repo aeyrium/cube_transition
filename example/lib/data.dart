@@ -25,7 +25,7 @@ const places = [
   const Place(
       name: 'Christ the Redeemer - Brazil',
       url:
-          'https://www.worldatlas.com/r/w728/upload/bb/a2/fa/shutterstock-180918317.jpg'),
+          'https://www.worldatlas.com/r/w728/upload/a2/b7/90/shutterstock-1283692720-1.jpg'),
   const Place(
       name: 'Petra - Jordan',
       url:

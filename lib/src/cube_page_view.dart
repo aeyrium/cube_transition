@@ -75,7 +75,6 @@ class _CubePageViewState extends State<CubePageView> {
 
   void _listener() {
     _pageNotifier.value = _pageController.page;
-    setState(() {});
   }
 
   @override
@@ -97,22 +96,27 @@ class _CubePageViewState extends State<CubePageView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: PageView.builder(
+    return Material(
+      color: Colors.transparent,
+      child: Center(
+        child: ValueListenableBuilder<double>(
+          valueListenable: _pageNotifier,
+          builder: (_, value, child) => PageView.builder(
             controller: _pageController,
             onPageChanged: widget.onPageChanged,
             physics: const ClampingScrollPhysics(),
             itemCount: widget.itemCount ?? widget.children.length,
             itemBuilder: (_, index) {
               if (widget.itemBuilder != null)
-                return widget.itemBuilder(context, index, _pageNotifier.value);
+                return widget.itemBuilder(context, index, value);
               return CubeWidget(
                 child: widget.children[index],
                 index: index,
-                pageNotifier: _pageNotifier.value,
+                pageNotifier: value,
               );
-            }),
+            },
+          ),
+        ),
       ),
     );
   }
@@ -143,7 +147,7 @@ class CubeWidget extends StatelessWidget {
     final isLeaving = (index - pageNotifier) <= 0;
     final t = (index - pageNotifier);
     final rotationY = lerpDouble(0, 90, t);
-    final opacity = lerpDouble(0, 1, t).clamp(0.0, 1.0);
+    final opacity = lerpDouble(0, 1, t.abs()).clamp(0.0, 1.0);
     final transform = Matrix4.identity();
     transform.setEntry(3, 2, 0.003);
     transform.rotateY(-vector.radians(rotationY));
@@ -155,7 +159,7 @@ class CubeWidget extends StatelessWidget {
           child,
           Positioned.fill(
             child: Opacity(
-              opacity: isLeaving ? 0.0 : opacity,
+              opacity: opacity,
               child: Container(
                 child: Container(
                   color: Colors.black87,
