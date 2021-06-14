@@ -79,11 +79,12 @@ class _CubePageViewState extends State<CubePageView> {
 
   @override
   void initState() {
+    super.initState();
     _pageController = widget.controller ?? PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pageController.addListener(_listener);
     });
-    super.initState();
+
   }
 
   @override
@@ -97,11 +98,11 @@ class _CubePageViewState extends State<CubePageView> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
       child: Center(
         child: ValueListenableBuilder<double>(
           valueListenable: _pageNotifier,
           builder: (_, value, child) => PageView.builder(
+
             controller: _pageController,
             onPageChanged: widget.onPageChanged,
             physics: const ClampingScrollPhysics(),
@@ -109,6 +110,7 @@ class _CubePageViewState extends State<CubePageView> {
             itemBuilder: (_, index) {
               if (widget.itemBuilder != null)
                 return widget.itemBuilder(context, index, value);
+
               return CubeWidget(
                 child: widget.children[index],
                 index: index,
@@ -156,7 +158,7 @@ class CubeWidget extends StatelessWidget {
       transform: transform,
       child: Stack(
         children: [
-          child,
+
           Positioned.fill(
             child: Opacity(
               opacity: opacity,
@@ -167,6 +169,7 @@ class CubeWidget extends StatelessWidget {
               ),
             ),
           ),
+          child,
         ],
       ),
     );
