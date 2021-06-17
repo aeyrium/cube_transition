@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:cube_transition/cube_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -15,6 +16,8 @@ typedef CubeWidgetBuilder = CubeWidget Function(
 /// It works in two modes :
 ///   1 - Using the default constructor [CubePageView] passing the items in `children` property.
 ///   2 - Using the factory constructor [CubePageView.builder] passing a `itemBuilder` and `itemCount` properties.
+
+enum CubeTransformStyle { inside, outside}
 
 class CubePageView extends StatefulWidget {
   /// Called whenever the page in the center of the viewport changes.
@@ -36,10 +39,12 @@ class CubePageView extends StatefulWidget {
 
   /// Widgets you want to use inside the [CubePageView], this is only required if you use [CubePageView] constructor
   final List<Widget> children;
-
+  
+  /// Direction
   final Axis scrollDirection;
 
-  //TODO: realise 'reverse cube trasform'
+  /// inside or outside
+  final CubeTransformStyle transformStyle;
 
   /// Creates a scrollable list that works page by page from an explicit [List]
   /// of widgets.
@@ -49,7 +54,7 @@ class CubePageView extends StatefulWidget {
       this.controller,
       @required this.children,
       this.scrollDirection = Axis.horizontal,
-      this.startPage = 0})
+      this.startPage = 0, this.transformStyle=CubeTransformStyle.outside})
       : itemBuilder = null,
         itemCount = null,
         assert(children != null),
@@ -73,7 +78,8 @@ class CubePageView extends StatefulWidget {
       @required this.itemBuilder,
       this.onPageChanged,
       this.controller,
-      this.scrollDirection = Axis.horizontal,
+      this.scrollDirection = Axis.horizontal, 
+      this.transformStyle=CubeTransformStyle.outside,
       this.startPage=0})
       : this.children = null,
         assert(itemCount != null),
@@ -119,7 +125,6 @@ class _CubePageViewState extends State<CubePageView> {
         child: ValueListenableBuilder<double>(
           valueListenable: _pageNotifier,
           builder: (_, value, child) => PageView.builder(
-
             scrollDirection: widget.scrollDirection,
             controller: _pageController,
             onPageChanged: widget.onPageChanged,
@@ -134,6 +139,7 @@ class _CubePageViewState extends State<CubePageView> {
                 index: index,
                 pageNotifier: value,
                 rotationDirection: widget.scrollDirection,
+                transformStyle: widget.transformStyle,
               );
             },
           ),
@@ -161,6 +167,10 @@ class CubeWidget extends StatelessWidget {
 
   /// Child you want to use inside the Cube
   final Widget child;
+  
+  ///
+  final CubeTransformStyle transformStyle;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -175,9 +185,15 @@ class CubeWidget extends StatelessWidget {
     transform.setEntry(3, 2, 0.001);
 
 
+    if (transformStyle==CubeTransformStyle.outside)
     rotationDirection == Axis.horizontal
         ? transform.rotateY(-degToRad(rotation))
-        : transform.rotateX(-degToRad(rotation));
+        : transform.rotateX(degToRad(rotation));
+    else
+      rotationDirection == Axis.horizontal
+          ? transform.rotateY(degToRad(rotation))
+          : transform.rotateX(-degToRad(rotation));
+
 
     var alignment;
     if (rotationDirection==Axis.horizontal) {
@@ -214,11 +230,11 @@ class CubeWidget extends StatelessWidget {
   const CubeWidget({
     Key key,
     this.rotationDirection = Axis.horizontal,
-
+    
     @required this.index,
     @required this.pageNotifier,
     @required this.child,
-    this.centerAligned=false,
+    this.centerAligned=false, this.transformStyle=CubeTransformStyle.outside,
 
   }) : super(key: key);
 }
