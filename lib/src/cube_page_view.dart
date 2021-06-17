@@ -27,6 +27,10 @@ class CubePageView extends StatefulWidget {
   /// Builder to customize your items
   final CubeWidgetBuilder itemBuilder;
 
+
+  /// Starting page
+  final int startPage;
+
   /// The number of items you have, this is only required if you use [CubePageView.builder]
   final int itemCount;
 
@@ -44,10 +48,12 @@ class CubePageView extends StatefulWidget {
       this.onPageChanged,
       this.controller,
       @required this.children,
-      this.scrollDirection = Axis.horizontal})
+      this.scrollDirection = Axis.horizontal,
+      this.startPage = 0})
       : itemBuilder = null,
         itemCount = null,
         assert(children != null),
+        assert(children.length>startPage),
         super(key: key);
 
   /// Creates a scrollable list that works page by page using widgets that are
@@ -67,9 +73,11 @@ class CubePageView extends StatefulWidget {
       @required this.itemBuilder,
       this.onPageChanged,
       this.controller,
-      this.scrollDirection = Axis.horizontal})
+      this.scrollDirection = Axis.horizontal,
+      this.startPage=0})
       : this.children = null,
         assert(itemCount != null),
+        assert(itemCount>startPage),
         assert(itemBuilder != null),
         super(key: key);
 
@@ -91,6 +99,8 @@ class _CubePageViewState extends State<CubePageView> {
     _pageController = widget.controller ?? PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pageController.addListener(_listener);
+      _pageController.jumpToPage(widget.startPage);
+
     });
   }
 
@@ -109,6 +119,7 @@ class _CubePageViewState extends State<CubePageView> {
         child: ValueListenableBuilder<double>(
           valueListenable: _pageNotifier,
           builder: (_, value, child) => PageView.builder(
+
             scrollDirection: widget.scrollDirection,
             controller: _pageController,
             onPageChanged: widget.onPageChanged,
@@ -150,16 +161,6 @@ class CubeWidget extends StatelessWidget {
 
   /// Child you want to use inside the Cube
   final Widget child;
-
-  const CubeWidget({
-    Key key,
-    this.rotationDirection = Axis.horizontal,
-
-    @required this.index,
-    @required this.pageNotifier,
-    @required this.child,
-    this.centerAligned=false
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -209,6 +210,17 @@ class CubeWidget extends StatelessWidget {
       ),
     );
   }
+
+  const CubeWidget({
+    Key key,
+    this.rotationDirection = Axis.horizontal,
+
+    @required this.index,
+    @required this.pageNotifier,
+    @required this.child,
+    this.centerAligned=false,
+
+  }) : super(key: key);
 }
 
 num degToRad(num deg) => deg * (pi / 180.0);

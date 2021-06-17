@@ -15,6 +15,7 @@ class Sample2 extends StatelessWidget {
         child: SizedBox(
           height: height,
           child: CubePageView(
+            startPage: 1,
             scrollDirection: Axis.vertical,
             children: places
                 .map(
