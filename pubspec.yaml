@@ -1,6 +1,6 @@
 name: cube_transition
 description: A nice 3D Cube effect for your PageView and PageRoute transitions.
-version: 1.0.2
+version: 1.0.5
 
 homepage: https://aeyrium.com/products/mxtracker/
 repository: https://github.com/aeyrium/cube_transition

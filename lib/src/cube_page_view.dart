@@ -1,6 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
+
+import 'package:cube_transition/cube_transition.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// Signature for a function that creates a widget for a given index in a [CubePageView]
 ///
@@ -14,6 +17,8 @@ typedef CubeWidgetBuilder = CubeWidget Function(
 ///   1 - Using the default constructor [CubePageView] passing the items in `children` property.
 ///   2 - Using the factory constructor [CubePageView.builder] passing a `itemBuilder` and `itemCount` properties.
 
+enum CubeTransformStyle { inside, outside}
+
 class CubePageView extends StatefulWidget {
   /// Called whenever the page in the center of the viewport changes.
   final ValueChanged<int> onPageChanged;
@@ -25,22 +30,35 @@ class CubePageView extends StatefulWidget {
   /// Builder to customize your items
   final CubeWidgetBuilder itemBuilder;
 
+
+  /// Starting page
+  final int startPage;
+
   /// The number of items you have, this is only required if you use [CubePageView.builder]
   final int itemCount;
 
   /// Widgets you want to use inside the [CubePageView], this is only required if you use [CubePageView] constructor
   final List<Widget> children;
+  
+  /// Direction
+  final Axis scrollDirection;
+
+  /// inside or outside
+  final CubeTransformStyle transformStyle;
 
   /// Creates a scrollable list that works page by page from an explicit [List]
   /// of widgets.
-  const CubePageView({
-    Key key,
-    this.onPageChanged,
-    this.controller,
-    @required this.children,
-  })  : itemBuilder = null,
+  const CubePageView(
+      {Key key,
+      this.onPageChanged,
+      this.controller,
+      @required this.children,
+      this.scrollDirection = Axis.horizontal,
+      this.startPage = 0, this.transformStyle=CubeTransformStyle.outside})
+      : itemBuilder = null,
         itemCount = null,
         assert(children != null),
+        assert(children.length>startPage),
         super(key: key);
 
   /// Creates a scrollable list that works page by page using widgets that are
@@ -54,14 +72,18 @@ class CubePageView extends StatefulWidget {
   /// [itemBuilder] will be called only with indices greater than or equal to
   /// zero and less than [itemCount].
 
-  CubePageView.builder({
-    Key key,
-    @required this.itemCount,
-    @required this.itemBuilder,
-    this.onPageChanged,
-    this.controller,
-  })  : this.children = null,
+  CubePageView.builder(
+      {Key key,
+      @required this.itemCount,
+      @required this.itemBuilder,
+      this.onPageChanged,
+      this.controller,
+      this.scrollDirection = Axis.horizontal, 
+      this.transformStyle=CubeTransformStyle.outside,
+      this.startPage=0})
+      : this.children = null,
         assert(itemCount != null),
+        assert(itemCount>startPage),
         assert(itemBuilder != null),
         super(key: key);
 
@@ -79,11 +101,13 @@ class _CubePageViewState extends State<CubePageView> {
 
   @override
   void initState() {
+    super.initState();
     _pageController = widget.controller ?? PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pageController.addListener(_listener);
+      _pageController.jumpToPage(widget.startPage);
+
     });
-    super.initState();
   }
 
   @override
@@ -97,11 +121,11 @@ class _CubePageViewState extends State<CubePageView> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
       child: Center(
         child: ValueListenableBuilder<double>(
           valueListenable: _pageNotifier,
           builder: (_, value, child) => PageView.builder(
+            scrollDirection: widget.scrollDirection,
             controller: _pageController,
             onPageChanged: widget.onPageChanged,
             physics: const ClampingScrollPhysics(),
@@ -109,10 +133,13 @@ class _CubePageViewState extends State<CubePageView> {
             itemBuilder: (_, index) {
               if (widget.itemBuilder != null)
                 return widget.itemBuilder(context, index, value);
+
               return CubeWidget(
                 child: widget.children[index],
                 index: index,
                 pageNotifier: value,
+                rotationDirection: widget.scrollDirection,
+                transformStyle: widget.transformStyle,
               );
             },
           ),
@@ -132,31 +159,58 @@ class CubeWidget extends StatelessWidget {
   /// Page Notifier value, it comes from the [CubeWidgetBuilder]
   final double pageNotifier;
 
+  /// Rotation direction
+  final Axis rotationDirection;
+
+  /// sides are center-aligned, it looks not like a cube, but nice
+  final bool centerAligned;
+
   /// Child you want to use inside the Cube
   final Widget child;
-
-  const CubeWidget({
-    Key key,
-    @required this.index,
-    @required this.pageNotifier,
-    @required this.child,
-  }) : super(key: key);
+  
+  ///
+  final CubeTransformStyle transformStyle;
+  
 
   @override
   Widget build(BuildContext context) {
     final isLeaving = (index - pageNotifier) <= 0;
     final t = (index - pageNotifier);
-    final rotationY = lerpDouble(0, 90, t);
+    final rotation = lerpDouble(0, 90, t);
     final opacity = lerpDouble(0, 1, t.abs()).clamp(0.0, 1.0);
     final transform = Matrix4.identity();
-    transform.setEntry(3, 2, 0.003);
-    transform.rotateY(-degToRad(rotationY));
+
+    rotationDirection == Axis.horizontal
+    ? transform.setEntry(3, 2, 0.003) :
+    transform.setEntry(3, 2, 0.001);
+
+
+    if (transformStyle==CubeTransformStyle.outside)
+    rotationDirection == Axis.horizontal
+        ? transform.rotateY(-degToRad(rotation))
+        : transform.rotateX(degToRad(rotation));
+    else
+      rotationDirection == Axis.horizontal
+          ? transform.rotateY(degToRad(rotation))
+          : transform.rotateX(-degToRad(rotation));
+
+
+    var alignment;
+    if (rotationDirection==Axis.horizontal) {
+      alignment = isLeaving ? Alignment.centerRight : Alignment.centerLeft;
+    } else
+      {
+        alignment = !isLeaving ? Alignment.topCenter : Alignment.bottomCenter;
+      }
+
+
+
+
     return Transform(
-      alignment: isLeaving ? Alignment.centerRight : Alignment.centerLeft,
+      alignment:  alignment,
       transform: transform,
       child: Stack(
         children: [
-          child,
           Positioned.fill(
             child: Opacity(
               opacity: opacity,
@@ -167,11 +221,24 @@ class CubeWidget extends StatelessWidget {
               ),
             ),
           ),
+          child,
         ],
       ),
     );
   }
+
+  const CubeWidget({
+    Key key,
+    this.rotationDirection = Axis.horizontal,
+    
+    @required this.index,
+    @required this.pageNotifier,
+    @required this.child,
+    this.centerAligned=false, this.transformStyle=CubeTransformStyle.outside,
+
+  }) : super(key: key);
 }
 
 num degToRad(num deg) => deg * (pi / 180.0);
+
 num radToDeg(num rad) => rad * (180.0 / pi);

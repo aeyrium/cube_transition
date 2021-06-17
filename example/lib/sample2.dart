@@ -1,4 +1,5 @@
 import 'package:cube_transition/cube_transition.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'data.dart';
 
@@ -14,14 +15,25 @@ class Sample2 extends StatelessWidget {
         child: SizedBox(
           height: height,
           child: CubePageView(
+            transformStyle: CubeTransformStyle.inside,
+            startPage: 1,
+            scrollDirection: Axis.vertical,
             children: places
                 .map(
                   (item) => Stack(
                     children: [
-                      Image.network(
-                        item.url,
-                        height: height,
-                        fit: BoxFit.cover,
+                      GestureDetector(
+                        onLongPress: ()=>print('longtap'),
+                        onTap: ()=>print('longtap'),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height,
+                          color: Colors.red,
+                          child: Image.network(
+                            item.url,
+                            height: height,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                       Positioned(
                         left: 0,
