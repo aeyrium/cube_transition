@@ -1,6 +1,6 @@
 class Place {
-  final String name;
-  final String url;
+  final String? name;
+  final String? url;
 
   const Place({this.name, this.url});
 }
