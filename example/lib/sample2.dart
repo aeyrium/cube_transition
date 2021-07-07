@@ -19,7 +19,7 @@ class Sample2 extends StatelessWidget {
                   (item) => Stack(
                     children: [
                       Image.network(
-                        item.url,
+                        item.url!,
                         height: height,
                         fit: BoxFit.cover,
                       ),
@@ -37,7 +37,7 @@ class Sample2 extends StatelessWidget {
                               ),
                             ]),
                             child: Text(
-                              item.name,
+                              item.name!,
                               style: Theme.of(context).textTheme.title,
                             ),
                           ),

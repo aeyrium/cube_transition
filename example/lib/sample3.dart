@@ -20,7 +20,7 @@ class Sample3 extends StatelessWidget {
             itemBuilder: (context, index, notifier) {
               final item = places[index];
               final transform = Matrix4.identity();
-              final t = (index - notifier).abs();
+              final t = (index - notifier!).abs();
               final scale = lerpDouble(1.5, 0, t);
               transform.scale(scale, scale);
               return CubeWidget(
@@ -29,7 +29,7 @@ class Sample3 extends StatelessWidget {
                 child: Stack(
                   children: [
                     Image.network(
-                      item.url,
+                      item.url!,
                       height: height,
                       fit: BoxFit.cover,
                     ),
@@ -48,7 +48,7 @@ class Sample3 extends StatelessWidget {
                               ),
                             ]),
                             child: Text(
-                              item.name.split('-').join('\n'),
+                              item.name!.split('-').join('\n'),
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.title,
                             ),

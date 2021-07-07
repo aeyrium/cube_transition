@@ -11,10 +11,10 @@ class CubePageRoute extends PageRouteBuilder {
   final Duration duration;
 
   /// The next page we will show
-  final Widget enterPage;
+  final Widget? enterPage;
 
   /// The current page we will dismiss
-  final Widget exitPage;
+  final Widget? exitPage;
 
   /// Background color used when the transition is running , it's [Colors.black] as default
   final Color backgroundColor;
@@ -28,7 +28,7 @@ class CubePageRoute extends PageRouteBuilder {
     ),
   }) : super(
           transitionDuration: duration,
-          pageBuilder: (context, animation, secondaryAnimation) => enterPage,
+          pageBuilder: (context, animation, secondaryAnimation) => enterPage!,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return Container(
               color: backgroundColor,
